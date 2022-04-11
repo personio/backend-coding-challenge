@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <springProfile name="default">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+        <logger name="com.personio" level="DEBUG"/>
+        <logger name="main" level="DEBUG"/>
+
+        <logger name="com.zaxxer.hikari" level="WARN"/>
+        <logger name="org.jooq.Constants" level="WARN"/>
+    </springProfile>
+</configuration>
