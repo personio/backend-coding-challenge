@@ -1,0 +1,16 @@
+### Ignore Gradle project-specific cache directory
+data/
+
+### Ignore Gradle build output directory
+build
+out
+.gradle
+.gradle-home
+?
+gradle
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr

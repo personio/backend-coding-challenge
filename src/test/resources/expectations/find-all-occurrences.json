@@ -1,0 +1,16 @@
+{
+    "data": [
+        {
+            "id": "aac7f6df-0a65-460d-bb53-6d422d3db797",
+            "reminder_id": "4e8549a3-6d92-4f89-8ccd-6a21ca63cb39",
+            "text": "Buy milk",
+            "date": "2022-04-01T13:00:04Z"
+        },
+        {
+            "id": "29e43fba-8504-448a-93e7-1c5f7a7346d5",
+            "reminder_id": "a11fc72b-baee-4980-8c64-d1da015db59d",
+            "text": "Hire great engineers",
+            "date": "2022-03-31T14:56:32Z"
+        }
+    ]
+}
