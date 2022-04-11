@@ -1,0 +1,171 @@
+openapi: "3.0.0"
+info:
+  title: Reminders Service
+  version: 0.1.0
+
+tags:
+  - name: Settings
+  - name: Occurrences
+
+paths:
+  /reminders:
+    get:
+      summary: retrieve all reminders settings
+      tags:
+        - Settings
+      parameters:
+        - name: employeeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ReminderResponse"
+    post:
+      summary: create a reminder
+      tags:
+        - Settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReminderRequest"
+      responses:
+        201:
+          description: Ok
+
+  /reminders/{id}:
+    delete:
+      summary: deletes a specific reminder settings
+      tags:
+        - Settings
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the reminder
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: Ok
+
+  /occurrences:
+    get:
+      summary: retrieve all open occurrences
+      tags:
+        - Occurrences
+      parameters:
+        - name: employeeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/OccurrenceResponse"
+  /occurrences/{id}:
+    put:
+      summary: acknowledge an occurrence
+      tags:
+        - Occurrences
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the occurrence
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: Ok
+
+components:
+  schemas:
+    ReminderResponse:
+      type: object
+      required:
+        - id
+        - text
+        - date
+        - recurring
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        date:
+          type: string
+          format: datetime
+        recurring:
+          type: boolean
+        recurrence_interval:
+          type: integer
+        recurrence_frequency:
+          type: integer
+    CreateReminderRequest:
+      type: object
+      required:
+        - employee_id
+        - text
+        - date
+        - is_recurring
+      properties:
+        employee_id:
+          type: string
+          format: uuid
+        text:
+          type: string
+        date:
+          type: string
+          format: datetime
+        is_recurring:
+          type: boolean
+        recurrence_interval:
+          type: integer
+        recurrence_frequency:
+          type: integer
+          description: 1 = daily, 2 = weekly, 3 = monthly, 4 = yearly
+    OccurrenceResponse:
+      type: object
+      required:
+        - id
+        - reminder_id
+        - text
+        - date
+      properties:
+        id:
+          type: string
+          format: uuid
+        reminder_id:
+          type: string
+          format: uuid
+        text:
+          type: string
+        date:
+          type: string
+          format: datetime
