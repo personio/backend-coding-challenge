@@ -1,0 +1,8 @@
+app:
+  appName: test-suite-coding-challenge
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  flyway:
+    enabled: true
