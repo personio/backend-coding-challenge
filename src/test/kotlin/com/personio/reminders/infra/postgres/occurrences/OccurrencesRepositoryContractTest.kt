@@ -7,9 +7,7 @@ import com.personio.reminders.helpers.MotherObject
 import java.time.Clock
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 private const val FREQUENCY_DAY = 1
