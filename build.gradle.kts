@@ -33,7 +33,7 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5:5.0.3")
     testImplementation("org.json:json:20220320")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
-    val testContainersVersion = "1.15.1"
+    val testContainersVersion = "1.17.2"
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
@@ -41,7 +41,7 @@ dependencies {
     testImplementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     testImplementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
 
-    jdbc("org.postgresql:postgresql:42.2.5")
+    jdbc("org.postgresql:postgresql:42.4.0")
 }
 
 sourceSets.main {
