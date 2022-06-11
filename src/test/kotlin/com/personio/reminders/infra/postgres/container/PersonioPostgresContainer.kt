@@ -94,7 +94,7 @@ class PersonioPostgresContainer(imageName: String) :
 
     private fun getAddress(): String {
         try {
-            return System.getenv("GATEWAY") ?: InetAddress.getLocalHost().canonicalHostName
+            return System.getenv("GATEWAY") ?: getHost()
         } catch (e: UnknownHostException) {
             throw RuntimeException("Unable to find HOST hostname", e)
         }
