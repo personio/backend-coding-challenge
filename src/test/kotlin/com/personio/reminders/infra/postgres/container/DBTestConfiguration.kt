@@ -21,7 +21,7 @@ class DBTestConfiguration {
      */
     @Bean
     fun testContainer(): PersonioPostgresContainer {
-        return PersonioPostgresContainer("postgres:13.1-alpine")
+        return PersonioPostgresContainer("postgres:15-alpine")
     }
 
     @Bean
