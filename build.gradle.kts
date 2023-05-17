@@ -1,3 +1,4 @@
+import dev.monosoul.jooq.GenerateJooqClassesTask
 import dev.monosoul.jooq.RecommendedVersions
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -16,7 +17,6 @@ plugins {
 }
 
 group = "com.personio"
-version = "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
@@ -48,29 +48,23 @@ dependencies {
     jooqCodegen("org.postgresql:postgresql")
 }
 
-sourceSets.main {
-    java.srcDirs("src/main/kotlin", "build/generated-jooq")
-}
-
-tasks {
-    generateJooqClasses {
-        usingJavaConfig {
-            database.withForcedTypes(
-                org.jooq.meta.jaxb.ForcedType()
-                    .withUserType("java.time.Instant")
-                    .withIncludeTypes("TIMESTAMP\\ WITH\\ TIME\\ ZONE")
-                    .withConverter(
-                        """
-                            org.jooq.Converter.ofNullable(
-                                java.time.OffsetDateTime.class,
-                                java.time.Instant.class,
-                                java.time.OffsetDateTime::toInstant,
-                                instant ->
-                                    java.time.OffsetDateTime.ofInstant(instant, java.time.ZoneOffset.UTC))
+tasks.withType<GenerateJooqClassesTask> {
+    usingJavaConfig {
+        database.withForcedTypes(
+            org.jooq.meta.jaxb.ForcedType()
+                .withUserType("java.time.Instant")
+                .withIncludeTypes("TIMESTAMP\\ WITH\\ TIME\\ ZONE")
+                .withConverter(
+                    """
+                    org.jooq.Converter.ofNullable(
+                        java.time.OffsetDateTime.class,
+                        java.time.Instant.class,
+                        java.time.OffsetDateTime::toInstant,
+                        instant ->
+                            java.time.OffsetDateTime.ofInstant(instant, java.time.ZoneOffset.UTC))
                         """.trimIndent()
-                    )
-            )
-        }
+                )
+        )
     }
 }
 
@@ -82,8 +76,5 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.withType<Test> {
-    useJUnitPlatform {
-        includeEngines("junit-jupiter")
-        excludeEngines("junit-vintage")
-    }
+    useJUnitPlatform()
 }
