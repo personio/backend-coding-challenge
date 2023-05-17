@@ -1,3 +1,4 @@
+import dev.monosoul.jooq.RecommendedVersions
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 repositories {
@@ -7,7 +8,7 @@ repositories {
 plugins {
     id("org.springframework.boot") version "2.6.4"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("com.revolut.jooq-docker") version "0.3.7"
+    id("dev.monosoul.jooq-docker") version "3.0.18"
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.spring") version "1.6.10"
 }
@@ -23,6 +24,9 @@ java {
 }
 
 dependencies {
+    project.extra["jooq.version"] = RecommendedVersions.JOOQ_VERSION
+    project.extra["flyway.version"] = RecommendedVersions.FLYWAY_VERSION
+
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -47,7 +51,7 @@ dependencies {
     testImplementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     testImplementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
 
-    jdbc("org.postgresql:postgresql:42.4.0")
+    jooqCodegen("org.postgresql:postgresql")
 }
 
 sourceSets.main {
@@ -56,7 +60,7 @@ sourceSets.main {
 
 tasks {
     generateJooqClasses {
-        customizeGenerator {
+        usingJavaConfig {
             database.withForcedTypes(
                 org.jooq.meta.jaxb.ForcedType()
                     .withUserType("java.time.Instant")
@@ -68,8 +72,7 @@ tasks {
                                 java.time.Instant.class,
                                 java.time.OffsetDateTime::toInstant,
                                 instant ->
-                                    java.time.OffsetDateTime.ofInstant(
-                                        instant, java.time.ZoneId.of("UTC")))
+                                    java.time.OffsetDateTime.ofInstant(instant, java.time.ZoneOffset.UTC))
                         """.trimIndent()
                     )
             )
