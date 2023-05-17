@@ -89,10 +89,14 @@ interface OccurrencesRepositoryContractTest {
 
         val remindersToRecur = repo.getInstantForNextReminderOccurrences()
 
-        val expectedOccurrenceTime = date.plus(1, ChronoUnit.DAYS)
+        // Truncate to microseconds because the PostgreSQL TIMESTAMP type doesn't support nanosecond precision
+        val expectedOccurrenceTime = date.plus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MICROS)
 
         assertEquals(1, remindersToRecur.size)
-        assertEquals(expectedOccurrenceTime, remindersToRecur[recurringReminder.id])
+        assertEquals(
+            expectedOccurrenceTime,
+            remindersToRecur[recurringReminder.id]!!.truncatedTo(ChronoUnit.MICROS)
+        )
     }
 
     @Test
