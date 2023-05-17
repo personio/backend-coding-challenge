@@ -34,6 +34,13 @@ When combining recurring reminders with the “send email at a certain time” f
 The service is written in Kotlin and uses Spring Boot as an underlying framework. 
 We also use [Flyway](http://flywaydb.org/) to manage database migrations and [JOOQ](http://jooq.org/) for writing SQL queries.
 
+### System requirements
+
+In order to build and run this project, you need the following components:
+
+- Java 17 (we recommend [Eclipse Temurin 17](https://adoptium.net/temurin/releases/?version=17))
+- Docker (or a compatible container runtime)
+
 ### Code Structure
 
 The service strives to follow the clean architecture approach
