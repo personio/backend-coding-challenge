@@ -13,7 +13,7 @@ jobs:
       - name: Setup and execute Gradle build
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build
+          arguments: build --info
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v4
