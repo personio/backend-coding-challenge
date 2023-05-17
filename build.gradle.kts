@@ -6,11 +6,13 @@ repositories {
 }
 
 plugins {
-    id("org.springframework.boot") version "2.6.4"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("org.springframework.boot") version "2.7.11"
+    id("io.spring.dependency-management") version "1.1.0"
     id("dev.monosoul.jooq-docker") version "3.0.18"
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.spring") version "1.6.10"
+
+    val kotlinVersion = "1.8.20"
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.spring") version kotlinVersion
 }
 
 group = "com.personio"
@@ -38,15 +40,15 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("io.kotest:kotest-assertions-core:5.0.3")
-    testImplementation("io.kotest:kotest-assertions-json:5.0.3")
-    testImplementation("io.kotest:kotest-runner-junit5:5.0.3")
-    testImplementation("org.json:json:20220320")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
-    val testContainersVersion = "1.17.2"
-    testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
-    testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
-    testImplementation("org.testcontainers:postgresql:$testContainersVersion")
+    testImplementation(platform("io.kotest:kotest-bom:5.6.2"))
+    testImplementation("io.kotest:kotest-assertions-core")
+    testImplementation("io.kotest:kotest-assertions-json")
+    testImplementation("io.kotest:kotest-runner-junit5")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+    testImplementation(platform("org.testcontainers:testcontainers-bom:1.18.1"))
+    testImplementation("org.testcontainers:testcontainers")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
     val exposedVersion = "0.37.3"
     testImplementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     testImplementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
@@ -78,11 +80,6 @@ tasks {
             )
         }
     }
-}
-
-configurations.testImplementation {
-    // prevent multiple occurrences of org.json.JSONObject on the class path
-    exclude("com.vaadin.external.google", "android-json")
 }
 
 tasks.withType<KotlinCompile> {
