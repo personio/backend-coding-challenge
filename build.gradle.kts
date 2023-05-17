@@ -49,9 +49,6 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
-    val exposedVersion = "0.37.3"
-    testImplementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
-    testImplementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
 
     jooqCodegen("org.postgresql:postgresql")
 }

@@ -2,11 +2,8 @@ package com.personio.reminders.infra.postgres.container
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import java.net.InetAddress
-import java.net.UnknownHostException
 import javax.sql.DataSource
 import org.flywaydb.core.Flyway
-import org.jetbrains.exposed.sql.Database
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.Wait
 
@@ -49,55 +46,10 @@ class PersonioPostgresContainer(imageName: String) :
                     driverClassName = this@PersonioPostgresContainer.driverClassName
                 }
         _dataSource = HikariDataSource(config)
-        Database.connect(dataSource)
     }
 
     private fun runMigrations() {
         Flyway.configure().dataSource(dataSource).mixed(true).load().migrate()
-    }
-
-    internal fun createNewUserWithCredentials(user: String, password: String) {
-        dataSource.connection
-            .use {
-                it.createStatement()
-                    .use { statement ->
-                        statement.execute("CREATE USER $user with password '$password';")
-                        statement.execute(
-                            "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $user;"
-                        )
-                        statement.execute(
-                            "GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public to $user;"
-                        )
-                    }
-            }
-    }
-
-    internal fun dataSourceWithCredentials(
-        usernameCredential: String,
-        passwordCredential: String
-    ): HikariDataSource {
-        return HikariDataSource(
-            HikariConfig()
-                .apply {
-                    jdbcUrl = this@PersonioPostgresContainer.jdbcUrl
-                    username = usernameCredential
-                    password = passwordCredential
-                    driverClassName = this@PersonioPostgresContainer.driverClassName
-                }
-        )
-    }
-
-    override fun getJdbcUrl(): String {
-        return "jdbc:postgresql://${getAddress()}:${getMappedPort(POSTGRESQL_PORT)}/" +
-            "$databaseName?loggerLevel=OFF"
-    }
-
-    private fun getAddress(): String {
-        try {
-            return System.getenv("GATEWAY") ?: getHost()
-        } catch (e: UnknownHostException) {
-            throw RuntimeException("Unable to find HOST hostname", e)
-        }
     }
 
     override fun stop() {
@@ -130,7 +82,3 @@ class PersonioPostgresContainer(imageName: String) :
             return _dataSource
         }
 }
-
-/** Returns a new [PersonioPostgresContainer] with which a PostgreSQL instance is run. */
-internal fun personioPostgresContainer(): PersonioPostgresContainer =
-    PersonioPostgresContainer("postgres:13.1-alpine")
