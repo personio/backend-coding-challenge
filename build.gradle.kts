@@ -49,6 +49,11 @@ dependencies {
 }
 
 tasks.withType<GenerateJooqClassesTask> {
+    withContainer {
+        image {
+            name = "postgres:15-alpine"
+        }
+    }
     usingJavaConfig {
         database.withForcedTypes(
             org.jooq.meta.jaxb.ForcedType()
