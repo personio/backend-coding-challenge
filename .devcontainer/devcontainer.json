@@ -1,0 +1,44 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/java
+{
+	"name": "Personio Backend Coding Challenge",
+	"image": "mcr.microsoft.com/devcontainers/java:17-bullseye",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
+		"ghcr.io/devcontainers/features/java:1": {
+			"version": "17",
+			"jdkDistro": "tem"
+		},
+		"ghcr.io/devcontainers/features/sshd:1": {}
+	},
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			"settings": {},
+			"extensions": [
+				"ckolkman.vscode-postgres",
+				"fwcd.kotlin",
+				"ms-azuretools.vscode-docker",
+				"vmware.vscode-boot-dev-pack",
+				"vscjava.vscode-gradle",
+				"vscjava.vscode-java-pack"
+			]
+		}
+	},
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [
+		5432,
+		8080
+	],
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": {
+		"docker-version": "docker --version",
+		"java-version": "java --version",
+		"gradle-assemble": "./gradlew assemble",
+		"postgresql": "docker-compose up db"
+	}
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}
