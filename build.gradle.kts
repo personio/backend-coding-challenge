@@ -1,6 +1,4 @@
-import dev.monosoul.jooq.GenerateJooqClassesTask
-import dev.monosoul.jooq.RecommendedVersions
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import kotlin.io.path.absolutePathString
 
 repositories {
     mavenCentral()
@@ -13,15 +11,12 @@ plugins {
 
     id("org.springframework.boot") version "3.1.1"
     id("io.spring.dependency-management") version "1.1.1"
-    id("dev.monosoul.jooq-docker") version "3.0.22"
+    id("nu.studer.jooq") version "8.2"
 }
 
 group = "com.personio"
 
 dependencies {
-    project.extra["jooq.version"] = RecommendedVersions.JOOQ_VERSION
-    project.extra["flyway.version"] = RecommendedVersions.FLYWAY_VERSION
-
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -38,33 +33,55 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
 
-    jooqCodegen("org.postgresql:postgresql")
+    jooqGenerator("org.postgresql:postgresql")
+    jooqGenerator("org.jooq:jooq-meta-extensions")
 }
 
-tasks.withType<GenerateJooqClassesTask> {
-    withContainer {
-        image {
-            name = "postgres:15-alpine"
+jooq {
+    configurations {
+        create("main") {
+            jooqConfiguration.apply {
+                logging = org.jooq.meta.jaxb.Logging.WARN
+                generator.apply {
+                    name = "org.jooq.codegen.DefaultGenerator"
+                    database.apply {
+                        name = "org.jooq.meta.extensions.ddl.DDLDatabase"
+                        properties = listOf(
+                            org.jooq.meta.jaxb.Property().apply {
+                                key = "scripts"
+                                value = sourceSets.main.map {
+                                    it.resources.sourceDirectories.singleFile
+                                        .toPath()
+                                        .resolve("db/migration/V0001__init.sql")
+                                        .absolutePathString()
+                                }.get()
+                            },
+                            org.jooq.meta.jaxb.Property().apply {
+                                key = "defaultNameCase"
+                                value = "lower"
+                            }
+                        )
+                        forcedTypes.addAll(listOf(
+                            org.jooq.meta.jaxb.ForcedType().apply {
+                                userType = "java.time.Instant"
+                                includeTypes = "TIMESTAMP\\ WITH\\ TIME\\ ZONE"
+                                converter = """
+                                    org.jooq.Converter.ofNullable(
+                                        java.time.OffsetDateTime.class,
+                                        java.time.Instant.class,
+                                        java.time.OffsetDateTime::toInstant,
+                                        instant ->
+                                            java.time.OffsetDateTime.ofInstant(instant, java.time.ZoneOffset.UTC))
+                                    """.trimIndent()
+                            }
+                        ))
+                    }
+                }
+            }
         }
     }
-    usingJavaConfig {
-        database.withForcedTypes(
-            org.jooq.meta.jaxb.ForcedType()
-                .withUserType("java.time.Instant")
-                .withIncludeTypes("TIMESTAMP\\ WITH\\ TIME\\ ZONE")
-                .withConverter(
-                    """
-                    org.jooq.Converter.ofNullable(
-                        java.time.OffsetDateTime.class,
-                        java.time.Instant.class,
-                        java.time.OffsetDateTime::toInstant,
-                        instant ->
-                            java.time.OffsetDateTime.ofInstant(instant, java.time.ZoneOffset.UTC))
-                        """.trimIndent()
-                )
-        )
-    }
 }
+tasks.named<nu.studer.gradle.jooq.JooqGenerate>("generateJooq") { allInputsDeclared.set(true) }
 
 kotlin {
     jvmToolchain(17)
