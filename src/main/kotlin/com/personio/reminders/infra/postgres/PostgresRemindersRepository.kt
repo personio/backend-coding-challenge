@@ -5,7 +5,6 @@ import com.personio.reminders.domain.reminders.RemindersRepository
 import java.time.Instant
 import java.util.UUID
 import org.jooq.DSLContext
-import org.jooq.generated.tables.Occurrences.OCCURRENCES
 import org.jooq.generated.tables.Reminders.REMINDERS
 import org.jooq.generated.tables.records.RemindersRecord
 import org.springframework.stereotype.Repository
@@ -72,6 +71,12 @@ class PostgresRemindersRepository(
             .fetchOne() ?: return null
 
         return record.toReminder()
+    }
+
+    override fun deleteBy(id: UUID): Int {
+        return dslContext.delete(REMINDERS)
+            .where(REMINDERS.ID.eq(id))
+            .execute()
     }
 
     private fun RemindersRecord.toReminder(): Reminder {

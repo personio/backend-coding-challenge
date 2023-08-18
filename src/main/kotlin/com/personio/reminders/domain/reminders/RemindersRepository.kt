@@ -9,4 +9,5 @@ interface RemindersRepository {
     fun create(reminder: Reminder)
     fun findAll(employeeId: UUID): Collection<Reminder>
     fun findBy(id: UUID): Reminder?
+    fun deleteBy(id: UUID): Int
 }

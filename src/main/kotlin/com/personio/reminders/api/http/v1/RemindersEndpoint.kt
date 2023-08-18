@@ -5,9 +5,11 @@ import com.personio.reminders.api.http.v1.requests.CreateReminderRequest
 import com.personio.reminders.api.http.v1.responses.shared.Response
 import com.personio.reminders.usecases.reminders.create.CreateReminderCommand
 import com.personio.reminders.usecases.reminders.create.CreateReminderUseCase
+import com.personio.reminders.usecases.reminders.find.DeleteRemindersUseCase
 import com.personio.reminders.usecases.reminders.find.FindRemindersUseCase
 import java.util.UUID
 import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -31,7 +33,8 @@ class RemindersEndpoint(
      * during the instantiation of this controller
      */
     private val createUseCase: CreateReminderUseCase,
-    private val findUseCase: FindRemindersUseCase
+    private val findUseCase: FindRemindersUseCase,
+    private val deleteUseCase: DeleteRemindersUseCase,
 ) {
 
     /**
@@ -55,5 +58,17 @@ class RemindersEndpoint(
     fun findAll(@RequestParam(required = true) employeeId: UUID) = Response(
         findUseCase.findAll(employeeId)
             .map(RemindersResponseMapper::toResponse)
+    )
+
+
+    /**
+     * This method is invoked when the employees perform a `DELETE` request to the
+     * `/reminders?reminderId={reminderId}` endpoint.
+     * This endpoint returns a `204 OK` status code to the client after the reminder is deleted.
+     */
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteReminder(@RequestParam(required = true) reminderId: UUID) = Response(
+        deleteUseCase.deleteReminder(reminderId)
     )
 }

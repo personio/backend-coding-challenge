@@ -22,4 +22,10 @@ class InMemoryRemindersRepository(
     override fun findBy(id: UUID): Reminder? {
         return reminders.singleOrNull { it.id == id }
     }
+
+    override fun deleteBy(id: UUID): Int {
+        val newList: MutableList<Reminder> = ArrayList()
+        this.findAll(id).forEach { newList.add(it) }
+        return if (reminders.removeAll(newList.toSet())) 1 else  0
+    }
 }

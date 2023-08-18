@@ -1,16 +1,15 @@
 package com.personio.reminders.api.http.v1
 
-import com.personio.reminders.domain.reminders.exceptions.ReminderNotFoundException
 import com.personio.reminders.helpers.MotherObject
 import com.personio.reminders.infra.configuration.DefaultTestConfiguration
 import com.personio.reminders.usecases.reminders.create.CreateReminderUseCase
+import com.personio.reminders.usecases.reminders.find.DeleteRemindersUseCase
 import com.personio.reminders.usecases.reminders.find.FindRemindersUseCase
 import java.time.Instant
 import java.util.UUID
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
@@ -43,6 +42,9 @@ class RemindersEndpointTest {
 
     @MockBean
     private lateinit var findUseCase: FindRemindersUseCase
+
+    @MockBean
+    private lateinit var deleteUseCase: DeleteRemindersUseCase
 
     @Test
     fun `create should return 201 status when a reminder is created`() {
@@ -131,6 +133,41 @@ class RemindersEndpointTest {
 
     @Test
     fun `findAll should return 400 if employee id is not provided`() {
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.get("/reminders")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .characterEncoding("utf-8")
+            )
+            .andExpect(MockMvcResultMatchers.status().`is`(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.errors[0].status")
+                    .value(HttpStatus.BAD_REQUEST.toString())
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.errors[0].title")
+                    .value(
+                        Matchers.containsString("Invalid input provided")
+                    )
+            )
+    }
+
+    @Test
+    fun `deleteReminder should return 204 with the deleting reminders`() {
+        val id1 = UUID.fromString("4e8549a3-6d92-4f89-8ccd-6a21ca63cb39")
+        whenever(deleteUseCase.deleteReminder(id1))
+                .thenReturn(1)
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.delete("/reminders?reminderId=$id1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .characterEncoding("utf-8")
+            )
+            .andExpect(MockMvcResultMatchers.status().`is`(HttpStatus.NO_CONTENT.value()))
+    }
+
+    @Test
+    fun `findAll should return 400 if reminder id is not provided`() {
         mockMvc
             .perform(
                 MockMvcRequestBuilders.get("/reminders")
