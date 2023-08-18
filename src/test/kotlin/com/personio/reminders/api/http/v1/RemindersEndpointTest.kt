@@ -1,6 +1,5 @@
 package com.personio.reminders.api.http.v1
 
-import com.personio.reminders.domain.reminders.exceptions.ReminderNotFoundException
 import com.personio.reminders.helpers.MotherObject
 import com.personio.reminders.infra.configuration.DefaultTestConfiguration
 import com.personio.reminders.usecases.reminders.create.CreateReminderUseCase
@@ -10,7 +9,6 @@ import java.util.UUID
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
@@ -64,6 +62,33 @@ class RemindersEndpointTest {
             )
             .andExpect(MockMvcResultMatchers.status().isCreated)
             .andExpect(MockMvcResultMatchers.jsonPath("$").doesNotExist())
+    }
+
+    @Test
+    fun `create should return 400 status when a reminder is created with empty text`() {
+        whenever(createUseCase.create(any())).thenReturn(UUID.randomUUID())
+        val jsonPayload =
+            """
+                {
+                    "employee_id": "5737a8cc-d04d-4d5d-894c-6ed57e4f8529",
+                    "text": "",
+                    "date": "2020-01-01"
+                }
+            """.trimIndent()
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/reminders")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonPayload)
+                    .characterEncoding("utf-8")
+            )
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.errors[0].title")
+                    .value(
+                        Matchers.containsString("Description field can not be empty")
+                    )
+            )
     }
 
     @Test

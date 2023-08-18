@@ -1,5 +1,6 @@
 package com.personio.reminders.api.http.v1
 
+import com.personio.reminders.api.http.v1.exceptions.InputValidationException
 import com.personio.reminders.api.http.v1.mappers.RemindersResponseMapper
 import com.personio.reminders.api.http.v1.requests.CreateReminderRequest
 import com.personio.reminders.api.http.v1.responses.shared.Response
@@ -42,6 +43,7 @@ class RemindersEndpoint(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@RequestBody request: CreateReminderRequest) {
+        if (request.text.isEmpty()) throw InputValidationException("description-can-not-empty")
         createUseCase.create(CreateReminderCommand.fromRequest(request))
         return
     }

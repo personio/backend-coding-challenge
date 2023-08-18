@@ -1,5 +1,6 @@
 package com.personio.reminders.api.http.v1
 
+import com.personio.reminders.api.http.v1.exceptions.InputValidationException
 import com.personio.reminders.api.http.v1.responses.shared.ApiError
 import com.personio.reminders.api.http.v1.responses.shared.ApiErrors
 import com.personio.reminders.domain.occurrences.exceptions.OccurrenceNotFoundException
@@ -38,6 +39,10 @@ class ExceptionsHandler(@Autowired private val messageSource: MessageSource) {
             HttpStatus.INTERNAL_SERVER_ERROR
         )
     }
+
+    @ExceptionHandler(value = [InputValidationException::class])
+    fun handleInputValidationException(ex: Exception, request: WebRequest, locale: Locale) =
+        responseWithApiError(HttpStatus.BAD_REQUEST, ex, locale)
 
     @ExceptionHandler(
         value = [HttpMessageNotReadableException::class, MissingServletRequestParameterException::class]
