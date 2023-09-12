@@ -47,9 +47,9 @@ The service strives to follow the clean architecture approach
 
 ![clean architecture diagram](docs/clean_architecture.png)
 
-(source: https://medium.com/swlh/clean-architecture-a-little-introduction-be3eac94c5d1)
+(source: https://dev.to/joaosczip/clean-architecture-a-little-introduction-4ag6)
 
-All API endpoints are located in `com.personio.reminders.api` package. The OpeanAPI documentation for the API is available in [openapi.yaml](openapi.yaml).
+All API endpoints are located in `com.personio.reminders.api` package. The OpenAPI documentation for the API is available in [openapi.yaml](openapi.yaml).
 
 Interfacing with external systems is limited to `com.personio.reminders.infrastructure` package.
 Use cases contain the application logic and depend only on domain entities.
